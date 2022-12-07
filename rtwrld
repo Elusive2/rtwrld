@@ -10,6 +10,7 @@ local Whitelist = {
     1349504715, -- G_Gooz
     492582056, -- haj2900
     3413391339, -- NineTheIX
+    343673526, -- LTM_Insanity
 }
 
 if not table.find(Whitelist, game.Players.LocalPlayer.UserId) then
