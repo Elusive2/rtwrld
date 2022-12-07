@@ -1179,6 +1179,7 @@ function ConvertPollen()
     end
 end
 
+local OnettDipperEvent = workspace.NPCs.Onett.Onett["Porcelain Dipper"].ClickEvent
 function AutoDig()
     if _G.AutoDiging then
         _G.AutoDiging = false
@@ -1194,6 +1195,7 @@ function AutoDig()
                     Object:FireServer()
                 end
             end
+            OnettDipperEvent:FireServer()
         end
     end)()
 end
