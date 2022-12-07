@@ -133,9 +133,9 @@ end
 LoadUI()
 wait(9)
 
---// Onett's Club
+--// Retard WRLD
 local Finity = loadstring(game:HttpGet("https://pastebin.com/raw/RJfmtcyK"))()
-local FinityWindow = Finity.new(true, "Bee Swarm Simulator | Onett's Club ")
+local FinityWindow = Finity.new(true, "Bee Swarm Simulator | Retard WRLD ")
 FinityWindow.ChangeToggleKey(Enum.KeyCode.RightControl)
 
 --// Info
@@ -161,7 +161,7 @@ local UseItemsSector = ExtrasCategory:Sector("Auto Use Items")
 --// Misc
 local MiscCategory = FinityWindow:Category("Misc")
 local FeedBeesSector = MiscCategory:Sector("Feed Bees")
-local WindShrineSector = MiscCategory:Sector("Wind Shrine (Not Working)")
+local WindShrineSector = MiscCategory:Sector("Wind Shrine")
 local BlenderSector = MiscCategory:Sector("Blender")
 local AmuletSector = MiscCategory:Sector("Amulet")
 local InventorySector = MiscCategory:Sector("Inventory")
@@ -255,6 +255,9 @@ _G.MasksMode = "5B"
 _G.MaskForFarm = "Diamond Mask"
 _G.FeedingBee = false
 _G.DebugGlider = false
+_G.AutoWindShrineDonate = false
+_G.AutoWindShrineSpawnRewards = false
+_G.CollectLeaves = false
 
 local ConvertedPollenForMobs = 0
 local NeedConvertPollenForMobs = 0
@@ -287,6 +290,7 @@ local CollectingSparkles = false
 local CollectingPlanter = false
 local CollectingPuffshrooms = false
 local CollectingMeteor = false
+local CollectingLeaves = false
 
 local NeedToCollectTickets = false
 
@@ -1848,6 +1852,72 @@ function CollectSparkles()
     CollectingSparkles = false
 end
 
+--// Collecting Leaves
+
+function CollectLeaves()
+    if _G.CollectLeaves then
+        _G.CollectLeaves = false
+        return
+    end
+
+    _G.CollectLeaves = true
+    if _G.Farming then repeat wait() until not _G.Farming or not _G.CollectLeaves end
+    if _G.AutoMobsKill then repeat wait() until not _G.AutoMobsKill or not _G.CollectLeaves end
+    if _G.AutoKillVicious then repeat wait() until not _G.AutoKillVicious or not _G.CollectLeaves end
+    if _G.HuntWindy then repeat wait() until not _G.HuntWindy or not _G.CollectLeaves end
+    if _G.HuntCommando then repeat wait() until not _G.HuntCommando or not _G.CollectLeaves end
+    if _G.HuntMondo then repeat wait() until not _G.HuntMondo or not _G.CollectLeaves end
+    if _G.TrainCrab then repeat wait() until not _G.TrainCrab or not _G.CollectLeaves end
+    if _G.AutoPuffshrooms then repeat wait() until not _G.AutoPuffshrooms or not _G.CollectLeaves end
+    if _G.CollectMeteor then repeat wait() until not _G.CollectMeteor or not _G.CollectLeaves end
+    if _G.CollectFireflys then repeat wait() until not _G.CollectFireflys or not _G.CollectLeaves end
+    if _G.FarmingSprouts then repeat wait() until not _G.FarmingSprouts or not _G.CollectLeaves end
+    if _G.CollectTickets then repeat wait() until not _G.CollectTickets or not _G.CollectLeaves end
+    if _G.HuntGuidingStar then repeat wait() until not _G.HuntGuidingStar or not _G.CollectLeaves end
+    if _G.CollectSparkles then repeat wait() until not _G.CollectSparkles or not _G.CollectLeaves end
+    if not _G.CollectLeaves then
+        return
+    end
+
+    local WaitForCharacter = false
+    local Connection
+    Connection = Humanoid.Died:Connect(function()
+        WaitForCharacter = true
+    end)
+    while _G.CollectLeaves do
+        for _, Object in pairs(workspace:GetDescendants()) do
+            if string.find(Object.Name, "LeafBurst") then
+                local Flower = Object.Parent
+                if Flower then
+                    local Distance = (HumRoot.Position - Flower.Position).Magnitude
+                    Tween:Create(HumRoot, TweenInfo.new(Distance / 120, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {CFrame = CFrame.new(Flower.Position + Vector3.new(20, 1, 0))}):Play()
+                    repeat wait()
+                        Humanoid:MoveTo(Flower.Position)
+                        Humanoid.WalkSpeed = 30
+                        if (HumRoot.Position - Flower.Position).Magnitude <= 3 then
+                            for _, Object in pairs(Character:GetDescendants()) do
+                                if Object.Name == "ClickEvent" then
+                                    Object:FireServer()
+                                end
+                            end
+                        end
+                        if WaitForCharacter then
+                            repeat wait() until Humanoid.Health > 0
+                            WaitForCharacter = false
+                            Connection = Humanoid.Died:Connect(function()
+                                WaitForCharacter = true
+                            end)
+                            break
+                        end
+                    until not Object.Parent or not _G.CollectLeaves
+                    wait(1.5)
+                    break
+                end
+            end
+        end
+    end
+end
+
 --// Bring Tornado
 
 local Particles = workspace.Particles
@@ -2054,7 +2124,7 @@ end
 InfoSector:Cheat("Label", "Created by: Fake#5860 & Darkness🌙#9999")
 InfoSector:Cheat("Label", "Thanks: Pepsi#5229 | Dinoz#2787")
 InfoSector:Cheat("Button", "Discord Invite", function()
-	setclipboard("YDwn8MMtRU")
+	setclipboard("https://discord.gg/2tnUywMFD5")
 end, {text = "Copy"})
 
 --// Farming Category
@@ -2183,8 +2253,8 @@ FarmingSector2:Cheat("Checkbox", "Pursue Firefly", function(State)
     _G.CollectFireflys = State
 end)
 
-FarmingSector2:Cheat("Checkbox", "Teleport To Leaves (Not Working)", function(State)
-
+FarmingSector2:Cheat("Checkbox", "Teleport To Leaves", function(State)
+    CollectLeaves()
 end)
 
 FarmingSector2:Cheat("Checkbox", "Teleport To Sparkles", function(State)
@@ -2536,31 +2606,47 @@ FeedBeesSector:Cheat("Checkbox", "Feed", function(State)
     end
 end)
 
+local WindShrineItems = {}
+for Name, _ in pairs(game:GetService("ReplicatedStorage").Events.RetrievePlayerStats:InvokeServer().Eggs) do
+    table.insert(WindShrineItems, Name)
+end
+
+local WindShrineItem = "Treat"
+local WindShrineAmount = 1
 WindShrineSector:Cheat("Textbox", "Amount:", function(Value)
-	print("Amount changed:", Value)
+	WindShrineAmount = tonumber(Value) or 1
 end, {placeholder = "Example: 1"})
 
 WindShrineSector:Cheat("Dropdown", "Item:", function(Option)
-	
+	WindShrineItem = Option
 end, {
-	options = {
-        "Treat",
-        "Blueberry",
-        "Pineapple",
-        "Strawberry",
-        "Sunflower Seed",
-		"Moon Charm",
-		"Bitter Berry",
-		"Neon Berry"
-	}
+	options = WindShrineItems
 })
 
 WindShrineSector:Cheat("Checkbox", "Donate", function(State)
+    if _G.AutoWindShrineDonate then
+        _G.AutoWindShrineDonate = false
+        return
+    end
 
+    _G.AutoWindShrineDonate = true
+    while _G.AutoWindShrineDonate do
+        wait(0.1)
+        game:GetService("ReplicatedStorage").Events.WindShrineDonation:InvokeServer(WindShrineItem, WindShrineAmount)
+    end
 end)
 
-WindShrineSector:Cheat("Checkbox", "Refund", function(State)
+WindShrineSector:Cheat("Checkbox", "Spawn Rewards", function(State)
+    if _G.AutoWindShrineSpawnRewards then
+        _G.AutoWindShrineSpawnRewards = false
+        return
+    end
 
+    _G.AutoWindShrineSpawnRewards = true
+    while _G.AutoWindShrineSpawnRewards do
+        wait(0.1)
+        game:GetService("ReplicatedStorage").Events.WindShrineTrigger:FireServer()
+    end
 end)
 
 local BlenderItem = "RedExtract"
@@ -3040,8 +3126,8 @@ coroutine.wrap(function()
         end
     
         --// Using Functions
-    
-        if not _G.Farming then
+
+        if not _G.Farming and not _G.CollectLeaves then
             if not SproutNow and _G.FarmingSprouts then
                 local Sprout, Field = CheckForSprout()
                 if Sprout and Field then
@@ -3142,4 +3228,4 @@ for Id = 1, 6 do
     game:GetService("ReplicatedStorage").Events.ClaimHive:FireServer(ClaimId)
 end
 
-print("Loading Done")
+print("Retarded Completed!")
