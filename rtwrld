@@ -265,55 +265,60 @@ _G.DebugGlider = false
 _G.AutoWindShrineDonate = false
 _G.AutoWindShrineSpawnRewards = false
 _G.CollectLeaves = false
+_G.AutoStickBug = false
+_G.AutoFarmStickBugTotems = false
 
-local ConvertedPollenForMobs = 0
-local NeedConvertPollenForMobs = 0
+ConvertedPollenForMobs = 0
+NeedConvertPollenForMobs = 0
 
-local ViciousNow = nil
-local WindyNow = nil
-local PlanterNow = nil
+ViciousNow = nil
+WindyNow = nil
+PlanterNow = nil
 
-local CommandoReady = false
-local MondoReady = false
-local CrabReady = false
+CommandoReady = false
+MondoReady = false
+CrabReady = false
 
-local SproutNow = nil
-local SproutField = nil
+SproutNow = nil
+SproutField = nil
 
-local GuidingStarNow = nil
-local GuidingStarField = nil
+GuidingStarNow = nil
+GuidingStarField = nil
 
-local KillingMobs = false
-local KillingVicious = false
-local KillingCommando = false
-local KillingMondo = false
-local KillingCrab = false
-local CollectingFireflys = false
-local CollectingSprout = false
-local CollectingTickets = false
-local FarmingGuidingStar = false
-local CollectingSproutWithoutFarm = false
-local CollectingSparkles = false
-local CollectingPlanter = false
-local CollectingPuffshrooms = false
-local CollectingMeteor = false
-local CollectingLeaves = false
+KillingMobs = false
+KillingVicious = false
+KillingCommando = false
+KillingMondo = false
+KillingCrab = false
+KillingStickBug = false
+CollectingFireflys = false
+CollectingSprout = false
+CollectingTickets = false
+FarmingGuidingStar = false
+CollectingSproutWithoutFarm = false
+CollectingSparkles = false
+CollectingPlanter = false
+CollectingPuffshrooms = false
+CollectingMeteor = false
+CollectingLeaves = false
 
-local NeedToCollectTickets = false
+NeedToCollectTickets = false
 
-local ElapsedTime = 0
-local HoneyCollected = 0
-local TicketsCollected = 0
-local KilledMobs = 0
-local SproutsCollected = 0
-local KilledVicious = 0
-local KilledWindy = 0
-local KilledMondo = 0
-local KilledCommando = 0
-local KilledCrabs = 0
+ElapsedTime = 0
+HoneyCollected = 0
+TicketsCollected = 0
+KilledMobs = 0
+SproutsCollected = 0
+KilledVicious = 0
+KilledWindy = 0
+KilledMondo = 0
+KilledCommando = 0
+KilledCrabs = 0
+KilledStickBugs = 0
+KilledStickNymphs = 0
+CollectedStickBugTotems = 0
 
 local DeletedObjects = {}
-
 local Gates = {
     ["5 Bees"] = workspace.Gates["5 Bee Gate"].Door,
     ["10 Bees"] = workspace.Gates["10 Bee Gate"].Door,
@@ -775,7 +780,7 @@ function CollectTokens(Action, Distance, WithoutFarm, Icons)
                     if not CheckForCollectTokens(Action) then
                         break
                     end
-                    if (_G.Farming or WithoutFarm) and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 90) then
+                    if (_G.Farming or WithoutFarm) and not KillingStickBug and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 90) then
                         HumRoot.CFrame = CFrame.new(FieldZones[_G.FarmingField].CFrame.Position + Vector3.new(0, 2, 0))
                     end
                 until ((HumRoot.Position - Position).Magnitude <= 3 and Humanoid.MoveDirection.Magnitude <= 0.5) or (_G.SavedFarmingField ~= SavedField and (not SproutNow or not _G.FarmingSprouts)) or not Token.Parent or Humanoid.Health <= 0 or (PollenBar.Size.X.Scale >= 1 and (_G.Farming or WithoutFarm))
@@ -797,7 +802,7 @@ function CollectTokens(Action, Distance, WithoutFarm, Icons)
                 end
                 NeedToCollectTickets = false
             end
-            if (_G.Farming or WithoutFarm) and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 120) then
+            if (_G.Farming or WithoutFarm) and not KillingStickBug and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 120) then
                 HumRoot.CFrame = CFrame.new(FieldZones[_G.FarmingField].CFrame.Position + Vector3.new(0, 2, 0))
             end
             if #MeteorsTable >= 1 and _G.CollectMeteor then
@@ -857,6 +862,7 @@ CoreStats.Honey:GetPropertyChangedSignal("Value"):Connect(function()
 end)
 
 local ActionButton = Player.PlayerGui.ScreenGui.ActivateButton
+local StickBugUI = Player.PlayerGui.ScreenGui.ChallengeInfo
 
 local WaitingForSproutCollected = false
 local DiedFarmConnection
@@ -886,6 +892,7 @@ function Farm(Data)
         if KillingCommando then repeat wait() until not KillingCommando or not _G.Farming end
         if KillingMondo then repeat wait() until not KillingMondo or not _G.Farming end
         if KillingCrab then repeat wait() until not KillingCrab or not _G.Farming end
+        if KillingStickBug then repeat wait() until not KillingStickBug or not _G.Farming end
         if CollectingPuffshrooms then repeat wait() until not CollectingPuffshrooms or not _G.Farming end
         if CollectingMeteor then repeat wait() until not CollectingMeteor or not _G.Farming end
         if CollectingFireflys then repeat wait() until not CollectingFireflys or not _G.Farming end
@@ -966,7 +973,7 @@ function Farm(Data)
                             repeat wait()
                                 FieldPosition = FieldZones[_G.FarmingField].CFrame.Position
                                 Humanoid:MoveTo(FieldPosition)
-                                if (_G.Farming or _G.WithoutFarm) and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 90) then
+                                if (_G.Farming or _G.WithoutFarm) and not KillingStickBug and not CollectingMeteor and not CollectingPuffshrooms and not CollectingPlanter and not KillingCrab and not KillingWindy and not CollectingSparkles and not CollectingFireflys and not KillingCommando and not KillingMondo and not KillingMobs and not KillingVicious and ((HumRoot.Position.Y - FieldZones[_G.FarmingField].CFrame.Position.Y) >= 5 or (FieldZones[_G.FarmingField].CFrame.Position.Y - HumRoot.Position.Y) >= 5 or (HumRoot.Position - FieldZones[_G.FarmingField].CFrame.Position).Magnitude >= 90) then
                                     HumRoot.CFrame = CFrame.new(FieldZones[_G.FarmingField].CFrame.Position + Vector3.new(0, 2, 0))
                                 end
                                 if CharacterDead then
@@ -1125,6 +1132,10 @@ function Farm(Data)
                             end
                         end
 
+                        if StickBugUI.Visible and _G.AutoStickBug then
+                            KillStickBug()
+                        end
+
                         if #workspace.Happenings.Puffshrooms:GetChildren() >= 1 and _G.AutoPuffshrooms then
                             CollectPuffshrooms()
                         end
@@ -1162,7 +1173,7 @@ function ConvertPollen()
         if Humanoid.Health <= 0 then
             repeat wait() until Humanoid.Health > 0 or not _G.ConvertingPollen
         end
-        if ViciousNow and _G.AutoKillVicious then
+        if ViciousNow and _G.AutoKillVicious and not KillingStickBug then
             KillVicious()
             TeleportToCFrame(SpawnCFrame.Value * CFrame.new(0, 2, 0))
             wait(1)
@@ -1171,10 +1182,10 @@ function ConvertPollen()
     until PollenBar.Size.X.Scale <= 0 or not _G.ConvertingPollen
     if _G.ConvertingPollen then
         wait(5)
-        if CheckForAnyQuests() and _G.RemoteQuests then
+        if CheckForAnyQuests() and _G.RemoteQuests and not KillingStickBug then
             RemoteQuests()
         end
-        if _G.AutoMobsKill then
+        if _G.AutoMobsKill and not KillingStickBug then
             ConvertedPollenForMobs = ConvertedPollenForMobs + 1
             if ConvertedPollenForMobs >= NeedConvertPollenForMobs then
                 ConvertedPollenForMobs = 0
@@ -1760,6 +1771,232 @@ function KillCrab(WithoutFarm)
     KillingCrab = false
 end
 
+--// Auto Stick Bug
+
+local StickBugPositions = {
+    ["Sunflower Field"] = {Vector3.new(-245, 4, 176), Vector3.new(-181, 4, 176)},
+    ["Clover Field"] = {Vector3.new(120, 33, 196), Vector3.new(193, 33, 196)},
+    ["Strawberry Field"] = {Vector3.new(-217, 20, -12), Vector3.new(-142, 20, -11)},
+    ["Bamboo Field"] = {Vector3.new(85, 20, -26), Vector3.new(183, 20, -27)},
+    ["Pineapple Patch"] = {Vector3.new(213, 68, -208), Vector3.new(295, 68, -208)},
+    ["Cactus Field"] = {Vector3.new(-229, 68, -104), Vector3.new(-146, 68, -102)},
+    ["Pumpkin Patch"] = {Vector3.new(-230, 68, -184), Vector3.new(-150, 68, -184)},
+    ["Mountain Top Field"] = {Vector3.new(44, 176, -166), Vector3.new(111, 176, -166)}
+}
+
+local StickBugAmulets = {"Bronze Stick Bug Amulet", "Silver Stick Bug Amulet", "Gold Stick Bug Amulet", "Diamond Stick Bug Amulet"}
+
+local StickBugPart = Instance.new("Part", workspace)
+StickBugPart.Name = "StickBugPart"
+StickBugPart.Anchored = true
+StickBugPart.CanCollide = true
+StickBugPart.Transparency = 1
+StickBugPart.Size = Vector3.new(5, 2, 5)
+StickBugPart.CFrame = CFrame.new(0, -500, 0)
+
+local function GetStickBugField(Model)
+    if not Model then return nil end
+    local Primary = Model.PrimaryPart
+    if Primary then
+        local _Ray = Ray.new(Primary.Position + Vector3.new(0, 5, 0), Vector3.new(0, -200, 0))
+        local Field = workspace:FindPartOnRayWithWhitelist(_Ray, {FieldZones})
+        if Field then
+            return Field
+        end
+    end
+    return nil
+end
+
+local StickBugDrop = {
+    ["rbxassetid://1471882621"] = true,
+    ["rbxassetid://1838129169"] = true,
+    ["rbxassetid://2028574353"] = true,
+    ["rbxassetid://2529092020"] = true,
+    ["rbxassetid://2584584968"] = true,
+    ["rbxassetid://2545746569"] = true,
+    ["rbxassetid://2319943273"] = true,
+    ["rbxassetid://1952796032"] = true,
+    ["rbxassetid://1952682401"] = true,
+}
+local StickBugUI = Player.PlayerGui.ScreenGui.ChallengeInfo
+local Monsters = workspace.Monsters
+local Particles = workspace.Particles
+
+local function GetTotemField(Primary)
+    if not Primary then return nil end
+    local _Ray = Ray.new(Primary.Position + Vector3.new(0, 5, 0), Vector3.new(0, -200, 0))
+    local Field = workspace:FindPartOnRayWithWhitelist(_Ray, {FieldZones})
+    if Field then
+        return Field
+    end
+    return nil
+end
+
+local function CollectTokensForTotem(TokenDistance, Totem, NotBreakedTotem)
+    for _, Token in pairs(Tokens:GetChildren()) do
+        local Distance = (Token.Position - HumRoot.Position).Magnitude
+        if Token:FindFirstChild("FrontDecal") and Distance <= (TokenDistance or 150) then
+            if StickBugDrop[Token.FrontDecal.Texture] or NotBreakedTotem then
+                if (HumRoot.Position.Y - Token.Position.Y) >= 5 or (Token.Position.Y - HumRoot.Position.Y) >= 5 then
+                    continue
+                end
+                local Time = Distance / 130
+                Tween:Create(HumRoot, TweenInfo.new(Time, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+                    CFrame = CFrame.new(Token.Position)
+                }):Play()
+                task.wait(Time + 0.15)
+                if not _G.AutoFarmStickBugTotems then
+                    break
+                end
+                if Totem and not Totem.Parent then
+                    break
+                end
+            end
+        end
+    end
+end
+
+function FarmStickBugTotem()
+    local Totem = Particles:FindFirstChild("StickBugTotem")
+    if Totem then
+        local Primary = Totem:FindFirstChild("Part")
+        if Primary then
+            local Field = GetTotemField(Primary)
+            if Field then
+                HumRoot.CFrame = CFrame.new(Primary.Position + Vector3.new(0, -6, 0))
+                wait(0.5)
+                SetSprinkler()
+                wait(0.5)
+                repeat wait()
+                    CollectTokensForTotem(75, Totem, true)
+                    HumRoot.CFrame = CFrame.new(Primary.Position + Vector3.new(0, -6, 0))
+                until not _G.AutoFarmStickBugTotems or not Totem.Parent
+                if _G.AutoFarmStickBugTotems and not Totem.Parent then
+                    wait(3)
+                    CollectedStickBugTotems = CollectedStickBugTotems + 1
+                    CollectTokensForTotem(90)
+                end
+            end
+        end
+    end
+end
+
+local StickBugModel
+local StickBugField
+function KillStickBug()
+    KillingStickBug = true
+
+    EquipMask("Demon Mask")
+    local StickBugLevel
+    repeat wait()
+        if StickBugModel then
+            local Field = GetStickBugField(StickBugModel)
+            if Field then
+                StickBugField = Field
+            end
+        end
+        if not _G.GodMode then
+            _G.GodMode = true
+            GodMode(true)
+        end
+        for _, Monster in pairs(Monsters:GetChildren()) do
+            if string.find(Monster.Name, "Stick Bug") then
+                if not StickBugModel or not StickBugLevel then
+                    StickBugModel = Monster
+                    StickBugLevel = Monster.Name
+                elseif StickBugLevel ~= Monster.Name then
+                    KilledStickBugs = KilledStickBugs + 1
+                    wait(0.5)
+                    StickBugPart.CFrame = CFrame.new(0, -500, 0)
+                    wait(3)
+                    for _, Token in pairs(Tokens:GetChildren()) do
+                        local Distance = (Token.Position - HumRoot.Position).Magnitude
+                        if Token:FindFirstChild("FrontDecal") and Distance <= 150 then
+                            if StickBugDrop[Token.FrontDecal.Texture] then
+                                local Time = Distance / 130
+                                Tween:Create(HumRoot, TweenInfo.new(Time, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {
+                                    CFrame = CFrame.new(Token.Position)
+                                }):Play()
+                                task.wait(Time + 0.15)
+                                if not _G.AutoStickBug then
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    wait(0.5)
+                    StickBugModel = Monster
+                    StickBugLevel = Monster.Name
+                end
+            end
+        end
+        
+        if StickBugModel then
+            local Primary = StickBugModel.PrimaryPart
+            if Primary then
+                if _G.AutoFarmStickBugTotems then
+                    if Particles:FindFirstChild("StickBugTotem") then
+                        FarmStickBugTotem() 
+                    end
+                end
+                local StickBugHealthBar = Particles:FindFirstChild("PollenHealthBar")
+                if StickBugHealthBar then
+                    local _Ray = Ray.new(StickBugHealthBar.Position + Vector3.new(0, 5, 0), Vector3.new(0, -200, 0))
+                    local Field = workspace:FindPartOnRayWithWhitelist(_Ray, {FieldZones})
+                    if Field then
+                        StickBugField = Field
+                    end
+                end
+                if StickBugField then
+                    local Distance = (StickBugField.Position - Primary.Position).Magnitude
+                    local PositionNow = 0
+                    if Distance >= 230 then
+                        StickBugPartCFrame = CFrame.new(0, -500, 0)
+                        HumRoot.CFrame = CFrame.new(StickBugField.Position + Vector3.new(0, 2, 0))
+                        repeat wait()
+                            Distance = (StickBugField.Position - Primary.Position).Magnitude
+                            PositionNow = PositionNow + 1
+                            if PositionNow > 2 then
+                                PositionNow = 1
+                            end
+
+                            local Position = StickBugPositions[StickBugField.Name][PositionNow]
+                            repeat wait()
+                                if StickBugModel then
+                                    local Field = GetStickBugField(StickBugModel)
+                                    if Field then
+                                        StickBugField = Field
+                                    end
+                                end
+                                Distance = (StickBugField.Position - Primary.Position).Magnitude
+                                if Distance >= 230 then
+                                    Humanoid:MoveTo(Position)
+                                end
+                            until (HumRoot.Position - Position).Magnitude <= 5 or Distance < 230 or not _G.AutoStickBug or not StickBugUI.Visible
+                        until Distance < 230 or not _G.AutoStickBug or not StickBugUI.Visible
+                    end
+                end
+                if _G.AutoStickBug then
+                    StickBugPart.CFrame = CFrame.new(Primary.Position + Vector3.new(0, 20, 0))
+                    HumRoot.CFrame = StickBugPart.CFrame * CFrame.new(0, StickBugPart.Size.Y / 2 + 1, 0)
+                end
+            end
+        end
+    until not _G.AutoStickBug or not StickBugUI.Visible
+    for _, Amulet in pairs(StickBugAmulets) do
+        game:GetService("ReplicatedStorage").Events.ClientRejectAmulet:FireServer("Stick Bug", Amulet)
+    end
+    if _G.GodMode then
+        _G.GodMode = false
+        GodMode(false)
+        wait(5)
+    end
+    StickBugPart.CFrame = CFrame.new(0, -500, 0)
+    StickBugModel = nil
+    StickBugField = nil
+    KillingStickBug = false
+end
+
 --// Collecting Puffshrooms
 
 function CollectPuffshrooms()
@@ -1877,6 +2114,7 @@ function CollectLeaves()
     if _G.HuntCommando then repeat wait() until not _G.HuntCommando or not _G.CollectLeaves end
     if _G.HuntMondo then repeat wait() until not _G.HuntMondo or not _G.CollectLeaves end
     if _G.TrainCrab then repeat wait() until not _G.TrainCrab or not _G.CollectLeaves end
+    if _G.AutoStickBug then repeat wait() until not _G.AutoStickBug or not _G.CollectLeaves end
     if _G.AutoPuffshrooms then repeat wait() until not _G.AutoPuffshrooms or not _G.CollectLeaves end
     if _G.CollectMeteor then repeat wait() until not _G.CollectMeteor or not _G.CollectLeaves end
     if _G.CollectFireflys then repeat wait() until not _G.CollectFireflys or not _G.CollectLeaves end
@@ -2010,11 +2248,13 @@ function RemoteBadges()
         return
     end
 
+    _G.RemoteBadges = true
     while _G.RemoteBadges do
-        wait()
         for _, Badge in pairs(Badges) do
             BadgeEvent:FireServer("Collect", Badge)
+            wait(0.25)
         end
+        wait(15)
     end
 end
 
@@ -2056,7 +2296,8 @@ function GodMode(State)
         PLCharacter.ChildAdded:Connect(function(Child)
             if Child.Name == "Glider" then
                 repeat game:GetService("RunService").RenderStepped:Wait()
-                    PLCharacter.PrimaryPart.Velocity = PLCharacter.PrimaryPart.CFrame.LookVector * 80
+                    PLCharacter.
+                    PrimaryPart.Velocity = PLCharacter.PrimaryPart.CFrame.LookVector * 80
                     PLCharacter.PrimaryPart.CFrame = PLCharacter.PrimaryPart.CFrame:Lerp(PLCharacter.PrimaryPart.CFrame * CFrame.new(0, -0.3, 0), 0.8)
                 until not Child.Parent or PLCharacter.Humanoid.FloorMaterial ~= Enum.Material.Air
                 game:GetService("ReplicatedStorage").Events.ParachuteCommand:FireServer("Close")
@@ -2073,6 +2314,9 @@ function GodMode(State)
 end
 
 function ToggleGodMode()
+    if KillingStickBug then
+        return false
+    end
     if _G.GodMode then
         _G.GodMode = false
         GodMode(false)
@@ -2130,7 +2374,7 @@ end
 
 --// Home Category
 
-InfoSector:Cheat("Label", "Created by: Fake#5860 & Darkness🌙#9999")
+InfoSector:Cheat("Label", "Created by: Fake#5860 & Darkness🌙#2212")
 InfoSector:Cheat("Label", "Thanks: Pepsi#5229 | Dinoz#2787")
 InfoSector:Cheat("Button", "Discord Invite", function()
 	setclipboard("https://discord.gg/2tnUywMFD5")
@@ -2230,8 +2474,12 @@ FarmingSector:Cheat("Checkbox", "Auto Ant (Not Working)", function(State)
 
 end)
 
-FarmingSector:Cheat("Checkbox", "Auto Stick Bug (Not Working)", function(State)
+FarmingSector:Cheat("Checkbox", "Auto Stick Bug", function(State)
+    _G.AutoStickBug = State
+end)
 
+FarmingSector:Cheat("Checkbox", "Auto Stick Bug Totems", function(State)
+    _G.AutoFarmStickBugTotems = State
 end)
 
 FarmingSector2:Cheat("Checkbox", "Collect Tickets", function(State)
@@ -2747,6 +2995,8 @@ StatisticsSector:Cheat("Label", "🌪️ Killed Windy: ")
 StatisticsSector:Cheat("Label", "🐥 Killed Mondo: ")
 StatisticsSector:Cheat("Label", "🐣 Killed Commando: ")
 StatisticsSector:Cheat("Label", "🦀 Killed Coconut Crab: ")
+StatisticsSector:Cheat("Label", "🐛 Killed Stick Bug: ")
+StatisticsSector:Cheat("Label", "📍 Collected Stickbug Totems: ")
 
 TimersSector:Cheat("Label", "Clover Beetle: Alive! ")
 TimersSector:Cheat("Label", "Clover Ladybug: Alive! ")
@@ -2778,7 +3028,8 @@ local WindyLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Stat
 local MondoLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.L.Statistics.Container["🐥 Killed Mondo: "].Title
 local CommandoLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.L.Statistics.Container["🐣 Killed Commando: "].Title
 local CrabLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.L.Statistics.Container["🦀 Killed Coconut Crab: "].Title
-
+local StickBugLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.L.Statistics.Container["🐛 Killed Stick Bug: "].Title
+local StickBugTotemsLabel = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.L.Statistics.Container["📍 Collected Stickbug Totems: "].Title
 local CloverBeetle = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Clover Beetle: Alive! "].Title
 local CloverLadybug = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Clover Ladybug: Alive! "].Title
 local BlueFlowerBeetle = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Blue Flower Beetle: Alive! "].Title
@@ -2877,6 +3128,8 @@ coroutine.wrap(function()
         MondoLabel.Text = "🐥 Killed Mondo: "..GetCommas(KilledMondo)
         CommandoLabel.Text = "🐣 Killed Commando: "..GetCommas(KilledCommando)
         CrabLabel.Text = "🦀 Killed Coconut Crab: "..GetCommas(KilledCrabs)
+        StickBugLabel.Text = "🐛 Killed Stick Bug: "..GetCommas(KilledStickBugs)
+        StickBugTotemsLabel.Text = "📍 Collected Stickbug Totems: "..GetCommas(CollectedStickBugTotems)
 
         UpdateTimer(CloverBeetle, workspace.MonsterSpawners["Rhino Bush"])
         UpdateTimer(CloverLadybug, workspace.MonsterSpawners["Ladybug Bush"])
@@ -3068,11 +3321,11 @@ end)
 
 -- Main Function
 
-
 coroutine.wrap(function()
     local CommandoTimer = workspace.MonsterSpawners["Commando Chick"].TimerAttachment.TimerGui.TimerLabel
     local CrabTimer = workspace.MonsterSpawners.CoconutCrab.TimerAttachment.TimerGui.TimerLabel
     local Particles = workspace.Particles
+    local StickBugUI = Player.PlayerGui.ScreenGui.ChallengeInfo
     wait(2)
     while _G.UpdateStats do
         wait()
@@ -3134,9 +3387,34 @@ coroutine.wrap(function()
             end
         end
     
+        for _, Monster in pairs(Monsters:GetChildren()) do
+            if string.find(Monster.Name, "Stick Bug") then
+                if not StickBugModel then
+                    StickBugModel = Monster
+                end
+            end
+        end
+        if StickBugModel then
+            local Field = GetStickBugField(StickBugModel)
+            if Field then
+                StickBugField = Field
+            end
+        end
+        local StickBugHealthBar = Particles:FindFirstChild("PollenHealthBar")
+        if StickBugHealthBar then
+            local _Ray = Ray.new(StickBugHealthBar.Position + Vector3.new(0, 5, 0), Vector3.new(0, -200, 0))
+            local Field = workspace:FindPartOnRayWithWhitelist(_Ray, {FieldZones})
+            if Field then
+                StickBugField = Field
+            end
+        end
+
         --// Using Functions
 
         if not _G.Farming and not _G.CollectLeaves then
+            if _G.AutoStickBug and StickBugUI.Visible then
+                KillStickBug()
+            end
             if not SproutNow and _G.FarmingSprouts then
                 local Sprout, Field = CheckForSprout()
                 if Sprout and Field then
@@ -3193,7 +3471,7 @@ end
 
 for _, Model in pairs(workspace.Decorations.Misc:GetChildren()) do
     if Model.Name == "Mushroom" and Model:IsA("Model") then
-        for _, Object in pairs(Model:GetDescendants()) do
+        for _, Object in pairs(Model:GetChildren()) do
             if Object:IsA("BasePart") or Object:IsA("MeshPart") then
                 Object.CanCollide = false
                 Object.Transparency = 0.5
@@ -3213,6 +3491,18 @@ end
 for _, Token in pairs(game.workspace.Collectibles:GetChildren()) do
     Token:Destroy()
 end 
+
+-- Memory Match
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    for _, ListObject in pairs(game.Players.LocalPlayer.PlayerGui.ScreenGui:WaitForChild("MinigameLayer"):GetChildren()) do
+        for _, Object in pairs(ListObject:WaitForChild("GuiGrid"):GetDescendants()) do
+            if Object.Name == "ObjContent" or Object.Name == "ObjImage" then
+                Object.Visible = true
+            end
+        end
+    end
+end)
 
 -- New character setting (when player died)
 Player.CharacterAdded:Connect(function(NewCharacter)
