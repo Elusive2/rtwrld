@@ -2002,7 +2002,13 @@ end
 function CollectPuffshrooms()
     CollectingPuffshrooms = true
     repeat wait()
+        if not _G.AutoPuffshrooms then
+            break
+        end
         for _, Object in pairs(workspace.Happenings.Puffshrooms:GetChildren()) do
+            if not _G.AutoPuffshrooms then
+                break
+            end
             local Stem = Object:FindFirstChild("Puffball Stem")
             if Stem then
                 HumRoot.CFrame = CFrame.new(Stem.Position)
@@ -2654,7 +2660,7 @@ end, {
         "Science Bear",
         "Riley Bee",
         "Honey Bee",
-        "Polar Bee",
+        "Polar Bear",
         "Onett",
         "Bubble Bee Man 2",
         "Spirit Bear"
