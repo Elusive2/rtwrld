@@ -271,6 +271,7 @@ _G.AutoWindShrineSpawnRewards = false
 _G.CollectLeaves = false
 _G.AutoStickBug = false
 _G.AutoFarmStickBugTotems = false
+_G.AutoAnt = false
 
 ConvertedPollenForMobs = 0
 NeedConvertPollenForMobs = 0
@@ -305,6 +306,7 @@ CollectingPlanter = false
 CollectingPuffshrooms = false
 CollectingMeteor = false
 CollectingLeaves = false
+FarmingAnts = false
 
 NeedToCollectTickets = false
 
@@ -319,7 +321,6 @@ KilledMondo = 0
 KilledCommando = 0
 KilledCrabs = 0
 KilledStickBugs = 0
-KilledStickNymphs = 0
 CollectedStickBugTotems = 0
 
 local DeletedObjects = {}
@@ -633,28 +634,16 @@ end
 local function CollectFuzzyBombs()
     for _, Object in pairs(workspace.Particles:GetChildren()) do
         if Object.Parent and Object.Name == "DustBunnyInstance" and (HumRoot.Position - Object.Plane.Position).Magnitude <= 50 then
-            local Plane = Object.Plane
-            --[[if _G.FarmingMode == "Walk" then
-                repeat wait()
-                    Humanoid:MoveTo(Plane.Position)
-                    if not _G.Farming then
-                        break
-                    end
-                until ((HumRoot.Position - Plane.Position).Magnitude <= 4 and Humanoid.MoveDirection.Magnitude <= 0.5) or not Object.Parent or Humanoid.Health <= 0 or PollenBar.Size.X.Scale >= 1
-            elseif _G.FarmingMode == "Tween" then
-                TeleportToCFrame(CFrame.new(Plane.Position))
+            local Plane = Object:FindFirstChild("Plane")
+            if Plane then
+                HumRoot.CFrame = CFrame.new(Plane.Position + Vector3.new(0, 1, 0))
                 wait(0.15)
-            elseif _G.FarmingMode == "Teleport" then
-                HumRoot.CFrame = CFrame.new(Plane.Position)
-                wait(0.15)
-            end--]]
-            HumRoot.CFrame = CFrame.new(Plane.Position + Vector3.new(0, 1, 0))
-            wait(0.15)
-            if not _G.Farming then
-                break
-            end
-            if PollenBar.Size.X.Scale >= 1 then
-                break
+                if not _G.Farming then
+                    break
+                end
+                if PollenBar.Size.X.Scale >= 1 then
+                    break
+                end
             end
         end
     end
@@ -1287,6 +1276,7 @@ function MonstersFarm(WithoutFarm)
         return
     end
 
+    TurnOff({"AutoMobsKill"})
     KillingMobs = true
     EquipMask("Demon Mask")
     local WaitForCharacterAdded = false
@@ -1418,6 +1408,7 @@ function MonstersFarm(WithoutFarm)
         end
     end
     --end
+    TurnAllOn()
     KillingMobs = false
 end
 
@@ -1479,6 +1470,7 @@ ViciousPlatform.Position = Vector3.new(0, -500, 0)
 function KillVicious(WithoutFarm)
     local Vicious = workspace.Particles:FindFirstChild("Vicious")
     if Vicious then
+        TurnOff({"AutoKillVicious"})
         KillingVicious = true
         if Humanoid.Health <= 0 then
             repeat wait() until Humanoid.Health > 0
@@ -1503,6 +1495,7 @@ function KillVicious(WithoutFarm)
         if not workspace.Particles:FindFirstChild("Vicious") and _G.AutoKillVicious then
             KilledVicious = KilledVicious + 1
         end
+        TurnAllOn()
         KillingVicious = false
     end
 end
@@ -1526,7 +1519,7 @@ WindyPlatform.Position = Vector3.new(0, -500, 0)
 
 function KillWindy(WithoutFarm)
     if WindyNow then
-        print("Killing Windy")
+        TurnOff({"HuntWindy"})
         KillingWindy = true
         if Humanoid.Health <= 0 then
             repeat wait() until Humanoid.Health > 0
@@ -1593,7 +1586,7 @@ function KillWindy(WithoutFarm)
         if _G.HuntWindy then
             KilledWindy = KilledWindy + 1
         end
-        print("Stopping")
+        TurnAllOn()
         KillingWindy = false
     end
 end
@@ -1610,6 +1603,7 @@ CommandoPart.CFrame = CFrame.new(0, -500, 0)
 
 function KillCommando(WithoutFarm)
     KillingCommando = true
+    TurnOff({"HuntCommando"})
     HumRoot.CFrame = CFrame.new(Vector3.new(500, 47, 167))
     wait(1)
     for _, Monster in pairs(workspace.Monsters:GetChildren()) do
@@ -1640,6 +1634,7 @@ function KillCommando(WithoutFarm)
             end
         end
     end
+    TurnAllOn()
     KillingCommando = false
 end
 
@@ -1668,6 +1663,7 @@ local MondoDrop = {
 
 function KillMondo(WithoutFarm)
     KillingMondo = true
+    TurnOff({"HuntMondo"})
     for _, Monster in pairs(workspace.Monsters:GetChildren()) do
         if string.find(Monster.Name, "Mondo Chick") then
             local Primary = Monster.PrimaryPart
@@ -1700,6 +1696,7 @@ function KillMondo(WithoutFarm)
             end
         end
     end
+    TurnAllOn()
     KillingMondo = false
 end
 
@@ -1738,6 +1735,7 @@ local CrabDrop = {
 function KillCrab(WithoutFarm)
     KillingCrab = true
     HumRoot.CFrame = FieldZones["Coconut Field"].CFrame * CFrame.new(0, 2, 0)
+    TurnOff({"TrainCrab"})
     wait(1.5)
     for _, Monster in pairs(workspace.Monsters:GetChildren()) do
         if string.find(Monster.Name, "Coconut Crab") and Monster.Target.Value.Name == Player.Name then
@@ -1772,6 +1770,7 @@ function KillCrab(WithoutFarm)
             end
         end
     end
+    TurnAllOn()
     KillingCrab = false
 end
 
@@ -1889,7 +1888,8 @@ local StickBugModel
 local StickBugField
 function KillStickBug()
     KillingStickBug = true
-
+    TurnOff({"AutoStickBug", "AutoStickBugTotems"})
+    
     EquipMask("Demon Mask")
     local StickBugLevel
     repeat wait()
@@ -1995,6 +1995,7 @@ function KillStickBug()
         GodMode(false)
         wait(5)
     end
+    TurnAllOn()
     StickBugPart.CFrame = CFrame.new(0, -500, 0)
     StickBugModel = nil
     StickBugField = nil
@@ -2005,6 +2006,7 @@ end
 
 function CollectPuffshrooms()
     CollectingPuffshrooms = true
+    TurnOff({"AutoPuffshrooms"})
     repeat wait()
         if not _G.AutoPuffshrooms then
             break
@@ -2058,6 +2060,7 @@ function CollectPuffshrooms()
             end
         end
     until #workspace.Happenings.Puffshrooms:GetChildren() <= 0 or not _G.AutoPuffshrooms
+    TurnAllOn()
     CollectingPuffshrooms = false
 end
 
@@ -3468,6 +3471,43 @@ coroutine.wrap(function()
         end
     end
 end)()
+
+local FarmingContainer = game:GetService("CoreGui").FinityUI.Container.Categories.Farming.L.Farming.Container
+local UILabels = {
+    Farming = FarmingContainer["Auto Farm"].Title,
+    AutoPuffshrooms = FarmingContainer["Auto Puffshrooms"].Title,
+    AutoMobsKill = FarmingContainer["Monster Killer"].Title,
+    HuntWindy = FarmingContainer["Hunt Windy"].Title,
+    FarmingSprouts = FarmingContainer["Farm Sprouts"].Title,
+    AutoKillVicious = FarmingContainer["Hunt Vicious"].Title,
+    HuntMondo = FarmingContainer["Hunt Mondo"].Title,
+    HuntCommando = FarmingContainer["Hunt Commando"].Title,
+    TrainCrab = FarmingContainer["Train Coconut Crab"].Title,
+    AutoStickBug = FarmingContainer["Auto Stick Bug"].Title,
+    AutoFarmStickBugTotems = FarmingContainer["Auto Stick Bug Totems"].Title,
+}
+
+function TurnAllOn()
+    for _, Label in pairs(UILabels) do
+        Label.Text = Label.Parent.Name
+        Label.TextColor3 = Color3.fromRGB(206, 206, 206)
+    end
+end
+
+function TurnOff(Functions)
+    for Name, Label in pairs(UILabels) do
+        if table.find(Functions, Name) or table.find(Functions, Label.Parent.Name) then
+            Label.Text = Label.Parent.Name..": WORKING"
+            Label.TextColor3 = Color3.fromRGB(132,255,130)
+        elseif _G[Name] then
+            Label.Text = Label.Parent.Name..": PAUSED"
+            Label.TextColor3 = Color3.fromRGB(255, 35, 0)
+        else
+            Label.Text = Label.Parent.Name
+            Label.TextColor3 = Color3.fromRGB(206, 206, 206)
+        end
+    end
+end
 
 -- Remove Decors
 
