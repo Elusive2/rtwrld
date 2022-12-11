@@ -636,7 +636,7 @@ local function CollectFuzzyBombs()
         if Object.Parent and Object.Name == "DustBunnyInstance" and (HumRoot.Position - Object.Plane.Position).Magnitude <= 50 then
             local Plane = Object:FindFirstChild("Plane")
             if Plane then
-                HumRoot.CFrame = CFrame.new(Plane.Position + Vector3.new(0, 1, 0))
+                HumRoot.CFrame = CFrame.new(Plane.Position + Vector3.new(0, 2, 0))
                 wait(0.15)
                 if not _G.Farming then
                     break
@@ -892,6 +892,7 @@ function Farm(Data)
         if CollectingSprout then repeat wait() until not CollectingSprout or not _G.Farming end
         if CollectingTickets then repeat wait() until not CollectingTickets or not _G.Farming end
         if FarmingGuidingStar then repeat wait() until not FarmingGuidingStar or not _G.Farming end
+        if FarmingAnts then repeat wait() until not FarmingAnts or not _G.Farming end
         if not _G.Farming then
             return
         end
@@ -1147,6 +1148,9 @@ function Farm(Data)
                         end
                         if Flowers:FindFirstChild("Sparkles", true) and _G.CollectSparkles then
                             CollectSparkles()
+                        end
+                        if _G.AutoAnt then
+                            FarmAnts()
                         end
                     end
                 until not OnField or PollenBar.Size.X.Scale >= 1 or Humanoid.Health <= 0 or not _G.Farming
@@ -1450,6 +1454,7 @@ function AutoUseDispensers()
         ToyEvent:FireServer("Strawberry Dispenser")
         ToyEvent:FireServer("Treat Dispenser")
         ToyEvent:FireServer("Free Royal Jelly Dispenser")
+        ToyEvent:FireServer("Free Ant Pass Dispenser")
         ToyEvent:FireServer("Coconut Dispenser")
         ToyEvent:FireServer("Glue Dispenser")
         if _G.AutoWealthClock then
@@ -2002,6 +2007,70 @@ function KillStickBug()
     KillingStickBug = false
 end
 
+--// Auto Farming Ants
+
+local AntPart = Instance.new("Part", workspace)
+AntPart.Name = "AntPart"
+AntPart.Anchored = true
+AntPart.CanCollide = true
+AntPart.Transparency = 1
+AntPart.Size = Vector3.new(5, 2, 5)
+AntPart.CFrame = CFrame.new(0, -500, 0)
+
+local AntChallenge = workspace.Toys["Ant Challenge"]
+function FarmAnts()
+    FarmingAnts = true
+
+    local RetrievePlayerStats = game:GetService("ReplicatedStorage").Events.RetrievePlayerStats
+    local StatsTable = RetrievePlayerStats:InvokeServer()
+    if StatsTable.Eggs.AntPass > 0 and not AntChallenge.Busy.Value then
+        local OldTool = StatsTable["EquippedCollector"]
+        ItemPackageEvent:InvokeServer("Equip", {["Mute"] = true, ["Type"] = "Spark Staff", ["Category"] = "Collector"})
+        ToyEvent:FireServer("Ant Challenge")
+        wait(3)
+        PlayerActivesCommand:FireServer({["Name"] = "Sprinkler Builder"})
+
+        local LeftPos = CFrame.new(127, 48, 547)
+		local RightPos = CFrame.new(65, 48, 534)
+
+        AntPart.CFrame = RightPos
+        HumRoot.CFrame = AntPart.CFrame * CFrame.new(0, AntPart.Size.Y / 2 + 1, 0)
+
+        local Left = true
+        local Right = false
+        local Debounce = false
+        repeat wait()
+            for _, Monster in pairs(AntChallenge.Obstacles:GetChildren()) do
+                local Root = Monster:FindFirstChild("Root")
+                if Root then
+                    if (Root.Position - HumRoot.Position).Magnitude <= 40 and Left and not Debounce then
+                        AntPart.CFrame = RightPos
+                        Right = true
+                        Left = false
+                        Debounce = true
+                        wait(.1)
+                    elseif (Root.Position - HumRoot.Position).Magnitude <= 40 and Right and not Debounce then
+                        AntPart.CFrame = LeftPos
+                        Right = false
+                        Left = true
+                        Debounce = true
+                        wait(.1)
+                    end
+                    HumRoot.CFrame = AntPart.CFrame * CFrame.new(0, AntPart.Size.Y / 2 + 1, 0)
+                    Debounce = false
+                end
+            end  
+        until not AntChallenge.Busy.Value or not _G.AutoAnt
+        AntPart.CFrame = CFrame.new(0, -500, 0)
+        if not _G.AutoAnt then
+            HumRoot.CFrame = SpawnCFrame.Value
+        end
+        wait(2)
+        game.ReplicatedStorage.Events.ItemPackageEvent:InvokeServer("Equip", {["Mute"] = true, ["Type"] = OldTool, ["Category"] = "Collector"})
+    end
+    FarmingAnts = false
+end
+
 --// Collecting Puffshrooms
 
 function CollectPuffshrooms()
@@ -2483,8 +2552,8 @@ FarmingSector:Cheat("Checkbox", "Hunt Aphid (Not Working)", function(State)
 
 end)
 
-FarmingSector:Cheat("Checkbox", "Auto Ant (Not Working)", function(State)
-
+FarmingSector:Cheat("Checkbox", "Auto Ant", function(State)
+    _G.AutoAnt = State
 end)
 
 FarmingSector:Cheat("Checkbox", "Auto Stick Bug", function(State)
@@ -3018,6 +3087,7 @@ TimersSector:Cheat("Label", "Bamboo Beetle: Alive! ")
 TimersSector:Cheat("Label", "Bamboo Beetle 2: Alive! ")
 TimersSector:Cheat("Label", "Pineapple Beetle: Alive! ")
 TimersSector:Cheat("Label", "Pineapple Mantis: Alive! ")
+TimersSector:Cheat("Label", "Spider: Alive! ")
 TimersSector:Cheat("Label", "Mushroom Ladybug: Alive! ")
 TimersSector:Cheat("Label", "Strawberry Ladybug: Alive! ")
 TimersSector:Cheat("Label", "Strawberry Ladybug 2: Alive! ")
@@ -3050,6 +3120,7 @@ local BambooBeetle = game:GetService("CoreGui").FinityUI.Container.Categories.St
 local BambooBeetle2 = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Bamboo Beetle 2: Alive! "].Title
 local PineappleBeetle = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Pineapple Beetle: Alive! "].Title
 local PineappleMantis = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Pineapple Mantis: Alive! "].Title
+local Spider = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Spider: Alive! "].Title
 local MushroomLadybug = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Mushroom Ladybug: Alive! "].Title
 local StrawberryLadybug = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Strawberry Ladybug: Alive! "].Title
 local StrawberryLadybug2 = game:GetService("CoreGui").FinityUI.Container.Categories.Statistics.R.Timers.Container["Strawberry Ladybug 2: Alive! "].Title
@@ -3151,6 +3222,7 @@ coroutine.wrap(function()
         UpdateTimer(BambooBeetle2, workspace.MonsterSpawners["Rhino Cave 3"])
         UpdateTimer(PineappleBeetle, workspace.MonsterSpawners.PineappleBeetle)
         UpdateTimer(PineappleMantis, workspace.MonsterSpawners.PineappleMantis1)
+        UpdateTimer(Spider, workspace.MonsterSpawners["Spider Cave"])
         UpdateTimer(MushroomLadybug, workspace.MonsterSpawners.MushroomBush)
         UpdateTimer(StrawberryLadybug, workspace.MonsterSpawners["Ladybug Bush 2"])
         UpdateTimer(StrawberryLadybug2, workspace.MonsterSpawners["Ladybug Bush 3"])
@@ -3467,6 +3539,9 @@ coroutine.wrap(function()
             end
             if _G.AutoMobsKill and not KillingMobs then
                 MonstersFarm()
+            end
+            if _G.AutoAnt then
+                FarmAnts()
             end
         end
     end
